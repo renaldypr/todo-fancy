@@ -1,9 +1,10 @@
 const Todo = require('../models/todo');
+const sendEmail = require('../helpers/sendEmail')
 
 module.exports = {
   show: function(req,res) {
     Todo.find({
-      userId: req.decoded
+      userId: req.decoded.id
     })
       .populate('userId', 'name')
       .exec(function(err, todos) {
@@ -21,13 +22,14 @@ module.exports = {
   },
   add: function(req,res) {
     Todo.create({
-      userId: req.decoded,
+      userId: req.decoded.id,
       name: req.body.name,
       description: req.body.description,
       status: false,
       dueDate: req.body.dueDate
     })
       .then(todo => {
+        sendEmail(req.decoded.email, req.decoded.name, todo.name, todo.description, todo.dueDate);
         res.status(200).json({
           message: 'task created successfully!',
           todo: todo
@@ -40,7 +42,7 @@ module.exports = {
       })
   },
   erase: function(req,res) {
-    Todo.deleteOne({ _id: req.query.id, userId: req.decoded }, function (err) {
+    Todo.deleteOne({ _id: req.query.id, userId: req.decoded.id }, function (err) {
       if(!err) {
         res.status(200).json({
           message: 'task deleted successfully!',
@@ -62,7 +64,7 @@ module.exports = {
         status: true
       }
     }
-    Todo.findOneAndUpdate({ _id: req.query.id, userId: req.decoded }, editObj, function(err, data) {
+    Todo.findOneAndUpdate({ _id: req.query.id, userId: req.decoded.id }, editObj, function(err, data) {
       if (!err) {
         res.status(200).json({
           message: 'task updated successfully',
@@ -86,7 +88,7 @@ module.exports = {
     } else if (req.body.status === 'false') {
       editObj.status = false
     }
-    Todo.findOneAndUpdate({ _id: req.query.id, userId: req.decoded }, editObj, function(err, data) {
+    Todo.findOneAndUpdate({ _id: req.query.id, userId: req.decoded.id }, editObj, function(err, data) {
       if (!err) {
         res.status(200).json({
           message: 'task updated successfully',

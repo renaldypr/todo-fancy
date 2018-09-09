@@ -57,9 +57,3 @@ border-right: 1px solid #eee;
 .row-body div:last-child {
 border-right: none; 
 }
-
-.list-group-item[aria-expanded="true"]{
-    background-color: black !important;
-    border-color: #aed248;
-
-}

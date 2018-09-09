@@ -10,32 +10,16 @@
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 </head>
 <body id="bodyLogin">
-  <script>
-      window.fbAsyncInit = function() {
-        FB.init({
-          appId            : '286553008832793',
-          autoLogAppEvents : true,
-          xfbml            : true,
-          version          : 'v3.1'
-        });
-      };
-    
-      (function(d, s, id){
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) {return;}
-          js = d.createElement(s); js.id = id;
-          js.src = "https://connect.facebook.net/en_US/sdk.js";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-    </script>
-
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
     
   </div>
 
   <div class="login-form">
       <form>
-          <h2 class="text-center">Log in</h2>       
+          <h3 class="text-center">Register</h3>  
+          <div class="form-group">
+              <input id="name" type="text" class="form-control" placeholder="Name" required="required">
+          </div>     
           <div class="form-group">
               <input id="email" type="text" class="form-control" placeholder="Email" required="required">
           </div>
@@ -43,12 +27,9 @@
               <input id="password" type="password" class="form-control" placeholder="Password" required="required">
           </div>
           <div class="form-group">
-              <button type="button" class="btn btn-primary btn-block" onclick="login()">Log in</button>
+              <button type="button" class="btn btn-primary btn-block" onclick="register()">Register</button>
           </div>     
-          <p class="text-center">or login via <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-            </fb:login-button></p>
       </form>
-      <p class="text-center"><a href="register.html" class="text-white">Create an Account</a></p>
   </div>
 
 
@@ -56,31 +37,27 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script>
-    function login() {
+    function register() {
+      let name = $("#name").val();
       let email = $("#email").val();
       let password = $("#password").val();
 
       $.ajax({
         method: 'post',
-        url: 'http://localhost:3000/users/login',
+        url: 'http://localhost:3000/users',
         data: {
+          name: name,
           email: email,
           password: password
         }
       })
         .done(function(data) {
-          if (data.status) {
-            console.log(data.status)
-          } else {
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', data.user);
-          }
-          window.location.replace("dashboard.html");
+          window.location.replace("index.html");
         })
         .fail(err => {
             $(".alert").text('')
             $(".alert").append(`
-            Login failed! Wrong password, or you haven't registered!
+            All fields must filled!
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -92,26 +69,6 @@
                 $('.alert').hide()
               }, 1500);
         })
-      }
-
-      function checkLoginState() {
-        FB.getLoginStatus(function(response) {
-          $.ajax({
-            method: 'post',
-            url: 'http://localhost:3000/users/loginfb',
-            headers: {
-              token_fb: response.authResponse.accessToken
-            }
-          })
-            .done((data) => {
-              localStorage.setItem('token', data.token);
-              localStorage.setItem('user', data.user);
-              window.location.replace("dashboard.html");
-            })
-            .fail(err => {
-              console.log(err)
-            })
-        });
       }
     </script>
 </body>

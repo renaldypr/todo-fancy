@@ -92,7 +92,6 @@ module.exports = {
                   })
                 })
             } else {
-              console.log(userData)
               jwt.sign({id: userData[0]._id, name: userData[0].name, email: userData[0].email}, process.env.JWT_KEY, (err, token) => {
                 res.status(200).json({
                   user: userData[0].name,

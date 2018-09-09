@@ -8,7 +8,7 @@ module.exports = {
         User.findById(decoded.id, function(err, user) {
           if (!err) {
             if (user) {
-              req.decoded = decoded.id
+              req.decoded = decoded
               next()
             } else {
               res.status(500).json({
