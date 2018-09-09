@@ -38,5 +38,65 @@ module.exports = {
           message: err
         })
       })
+  },
+  erase: function(req,res) {
+    Todo.deleteOne({ _id: req.query.id, userId: req.decoded }, function (err) {
+      if(!err) {
+        res.status(200).json({
+          message: 'task deleted successfully!',
+        }) 
+      } else {
+        res.status(500).json({
+          message: err
+        })
+      }
+    });
+  },
+  finish: function(req,res) {
+    if (req.body.status === 'true') {
+      editObj = {
+        status: false
+      }
+    } else if (req.body.status === 'false') {
+      editObj = {
+        status: true
+      }
+    }
+    Todo.findOneAndUpdate({ _id: req.query.id, userId: req.decoded }, editObj, function(err, data) {
+      if (!err) {
+        res.status(200).json({
+          message: 'task updated successfully',
+          data: data
+        })
+      } else {
+        res.status(500).json({
+          message: err
+        })
+      }
+    });
+  },
+  edit: function(req,res) {
+    let editObj = {
+      name: req.body.name,
+      description: req.body.desc,
+      dueDate: req.body.dueDate
+    }
+    if (req.body.status === 'true') {
+      editObj.status = true
+    } else if (req.body.status === 'false') {
+      editObj.status = false
+    }
+    Todo.findOneAndUpdate({ _id: req.query.id, userId: req.decoded }, editObj, function(err, data) {
+      if (!err) {
+        res.status(200).json({
+          message: 'task updated successfully',
+          data: data
+        })
+      } else {
+        res.status(500).json({
+          message: err
+        })
+      }
+    });
   }
 }

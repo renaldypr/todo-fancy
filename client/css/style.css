@@ -1,6 +1,16 @@
 body {
     padding-top: 54px;
 }
+#bodyLogin {
+    background-color: #563d7c;
+}
+.alert {
+    display: none;
+    position:fixed;
+    top: 0;
+    right: 0;
+    z-index: 999;
+}
 .login-form {
     width: 340px;
     margin: 50px auto;
@@ -23,8 +33,9 @@ body {
     font-weight: bold;
 }
 .navbar {
-    background-color: black;
+    background-color: #563d7c;
 }
+
 .row {
     display: flex;
 }
@@ -45,4 +56,10 @@ border-right: 1px solid #eee;
 
 .row-body div:last-child {
 border-right: none; 
+}
+
+.list-group-item[aria-expanded="true"]{
+    background-color: black !important;
+    border-color: #aed248;
+
 }

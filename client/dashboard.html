@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Todo Fancy!</title>
+  <title>Your Task | Todo Fancy!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link rel="stylesheet" href="css/style.css">
@@ -13,35 +13,25 @@
 <body>
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-      <a class="navbar-brand" href="index.html">BebasTapiSopan Production</a>
+      <a class="navbar-brand" href="dashboard.html">Todo Fancy!</a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
-            <a class="nav-link h4" href="#" data-toggle="modal" data-target="#addTask">+</a>
+            <a class="nav-link" href="#" data-toggle="modal" data-target="#addTask">Add Task</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPortfolio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Services
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">
-              <a class="dropdown-item" href="#">Wedding</a>
-              <a class="dropdown-item" href="#">Prewedding</a>
-              <a class="dropdown-item" href="#">Music Video</a>
-              <a class="dropdown-item" href="#">Company Profile Video</a>
-              <a class="dropdown-item" href="#">Business Promotional Video</a>
-            </div>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="#portfolio">Portfolio</a>
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownName" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownName">
+                  <a class="nav-link text-dark" href="#" onclick="logout()">Log Out</a>
+              </div>
             </li>
           <li class="nav-item">
-            <a class="nav-link" href="#about">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#about">Contact</a>
+            
           </li>
         </ul>
       </div>
@@ -51,7 +41,11 @@
   <div class="container">
     <div class="row row-body mt-4">
       <div class="col-md-3 box">
-        <div class="list-group" id="list-tab" role="tablist">
+        <div class="list-group" id="list-tab-1" role="tablist">
+          
+        </div><br><br><br>
+        <p class="text-muted">Finished:</p>
+        <div class="list-group" id="list-tab-2" role="tablist">
 
         </div>
       </div>
@@ -84,10 +78,17 @@
             </form>
           </div>
           <div class="modal-footer">
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    
+              </div>
             <button type="button" class="btn btn-primary" onclick="addTask($('#name').val(), $('#desc').val(), $('#dueDate').val())">Save</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="modal fade" id="editTask" tabindex="-1" role="dialog" aria-labelledby="editTask" aria-hidden="true">
+        
     </div>
 
 
@@ -106,34 +107,49 @@
         .done(function(data) {
           let tasks = data.todos;
           tasks.forEach(task => {
-            $("#list-tab").append(
-            `
-            <a onclick="getDetails('${task._id}', '${task.name}', '${task.description}', '${task.status}', '${task.dueDate}')" class="list-group-item list-group-item-action" id="'${task._id}'" data-toggle="list" href="#list-'${task._id}'" role="tab" aria-controls="'${task.name}'">${task.name}</a>
-    
-            `
-          )
+            if (!task.status) {
+              $("#list-tab-1").append(
+                `
+                <a onclick="getDetails('${task._id}', '${task.name}', '${task.description}', '${task.status}', '${task.dueDate}')" class="list-group-item list-group-item-action" id="'${task._id}'" data-toggle="list" href="#list-'${task._id}'" role="tab" aria-controls="'${task.name}'">${task.name}</a>
+        
+                `
+              )
+            } else {
+              $("#list-tab-2").append(
+                `
+                <a onclick="getDetails('${task._id}', '${task.name}', '${task.description}', '${task.status}', '${task.dueDate}')" class="list-group-item list-group-item-action list-group-item-dark" id="'${task._id}'" href="#list-'${task._id}'" role="tab" aria-controls="'${task.name}'"><s>${task.name}</s></a>
+        
+                `
+              )
+            }
           })
 
         })
         .fail(function(err) {
           console.log(err.responseJSON.message)
         })
+      let nama = localStorage.getItem('user')
+      $("#navbarDropdownName").append(`
+        Hi, ${nama}!
+      `)
     })
 
     function getDetails(id, name, desc, status, date) {
       let rawDate = String(new Date(date))
       let readDate = rawDate.split(' ').slice(0,4).join(' ')
-      if(status) {
+      let editDate = String(date).slice(0,10);
+
+      if(status === 'false') {
         statusStr = 'Not Finished'
-        button = `<button type="button" class="btn btn-success" onclick="finishTask('${id}')">Finish</button>`
-      } else {
+        button = `<button type="button" class="btn btn-success" onclick="finishTask('${id}', '${status}')">Finish</button>`
+      } else if (status === 'true'){
         statusStr = 'Finished'
-        button = `<button type="button" class="btn btn-warning" onclick="unfinishTask('${id}')">Unfinish</button>`
+        button = `<button type="button" class="btn btn-warning" onclick="finishTask('${id}', '${status}')">Unfinish</button>`
       }
       $("#details").text('')
       $("#details").append(
         `
-        <button type="button" class="btn btn-info" onclick="editTask('${id}')">Edit</button>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#editTask")">Edit</button>
         ${button}
         <button type="button" class="btn btn-danger" onclick="deleteTask('${id}')">Delete</button><br><br>
         <h2>${name}</h2>
@@ -142,6 +158,44 @@
         <p>Status: ${statusStr}</p>       
         `
       )
+      $("#editTask").text('');
+      $("#editTask").append(
+        `
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel2">Edit Task</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>    
+                  <div class="form-group">
+                      <input id="editName" type="text" class="form-control" value="${name}" required="required">
+                  </div>
+                  <div class="form-group">
+                      <textarea id="editDesc" class="form-control" cols="40" rows="5">${desc}</textarea>
+                  </div>
+                  <div class="form-group">
+                      <select id="editStatus">
+                        <option value="true">Finished</option>
+                        <option value="false">Not Finished</option>
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <input id="editDueDate" type="date" class="form-control" value="${editDate}" required="required">
+                  </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" onclick="editTask('${id}', $('#editName').val(), $('#editDesc').val(), $('#editStatus').val(), $('#editDueDate').val())">Save</button>
+            </div>
+          </div>
+        </div>
+        `
+      )
+      $('#editStatus').val(status);
     }
 
     function addTask(name, desc, date) {
@@ -162,8 +216,131 @@
           window.location.reload();
         })
         .fail(function(err) {
-          console.log(err.responseJSON.message)
+          console.log(err)
+          $(".alert").text('')
+            $(".alert").append(`
+            Name and Due Date field must be filled!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            `)
+            $('.alert').show()
+            setTimeout(
+              function() 
+              {
+                $('.alert').hide()
+              }, 1500);
         })
+    }
+
+    function deleteTask(id) {
+      let token = localStorage.getItem('token');
+      $.ajax({
+        method: 'delete',
+        url: `http://localhost:3000/todos?id=${id}`,
+        headers: {
+          token: token
+        },
+      })
+        .done(function() {
+          window.location.reload();
+        })
+        .fail(function(err) {
+          console.log(err.responseJSON.message)
+          $(".alert").text('')
+            $(".alert").append(`
+            Delete failed!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            `)
+            $('.alert').show()
+            setTimeout(
+              function() 
+              {
+                $('.alert').hide()
+              }, 1500);
+        })
+    }
+
+    function finishTask(id, status) {
+      let token = localStorage.getItem('token');
+      $.ajax({
+        method: 'patch',
+        url: `http://localhost:3000/todos?id=${id}`,
+        headers: {
+          token: token
+        },
+        data: {
+          status: status
+        }
+      })
+        .done(function() {
+          window.location.reload()
+        })
+        .fail(function(err) {
+          console.log(err.responseJSON.message)
+          $(".alert").text('')
+            $(".alert").append(`
+            Finish feature failed!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            `)
+            $('.alert').show()
+            setTimeout(
+              function() 
+              {
+                $('.alert').hide()
+              }, 1500);
+        })
+    }
+
+    function editTask(id, name, desc, status, dueDate) {
+      let token = localStorage.getItem('token');
+      $.ajax({
+        method: 'put',
+        url: `http://localhost:3000/todos?id=${id}`,
+        headers: {
+          token: token
+        },
+        data: {
+          name: name,
+          desc: desc,
+          status: status,
+          dueDate: dueDate
+        }
+      })
+        .done(function() {
+          //updateDiv('details')
+          window.location.reload()
+        })
+        .fail(function(err) {
+          console.log(err.responseJSON.message)
+          $(".alert").text('')
+            $(".alert").append(`
+            Edit  failed!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            `)
+            $('.alert').show()
+            setTimeout(
+              function() 
+              {
+                $('.alert').hide()
+              }, 1500);
+        })
+    }
+
+    function updateDiv(divId) { 
+      $(`#${divId}`).load('dashboard.html');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace("index.html");
     }
   </script>
 </body>
