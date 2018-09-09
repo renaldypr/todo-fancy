@@ -33,7 +33,7 @@ module.exports = {
             })
           } else {
             if (bcrypt.compareSync(req.body.password, user[0].password)) {
-              jwt.sign({name: user[0].name, email:user[0].email}, process.env.JWT_KEY, function(err, token) {
+              jwt.sign({id: user[0]._id, name: user[0].name, email:user[0].email}, process.env.JWT_KEY, function(err, token) {
                 if (!err) {
                   res.status(200).json({
                     user: user[0].name,
@@ -79,7 +79,7 @@ module.exports = {
                 isRegisterViaFB: true
               })
                 .then(user => {
-                  jwt.sign({name: user.name, email: user.email}, process.env.JWT_KEY, (err, token) => {
+                  jwt.sign({id: user[0]._id, name: user.name, email: user.email}, process.env.JWT_KEY, (err, token) => {
                     res.status(200).json({
                       user: user.name,
                       token: token
@@ -92,7 +92,8 @@ module.exports = {
                   })
                 })
             } else {
-              jwt.sign({name: userData[0].name, email: userData[0].email}, process.env.JWT_KEY, (err, token) => {
+              console.log(userData)
+              jwt.sign({id: userData[0]._id, name: userData[0].name, email: userData[0].email}, process.env.JWT_KEY, (err, token) => {
                 res.status(200).json({
                   user: userData[0].name,
                   token: token

@@ -9,8 +9,10 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 const userRouter = require('./routes/userRoute');
+const todoRouter = require('./routes/todoRoute');
 
-app.use('/users', userRouter)
+app.use('/users', userRouter);
+app.use('/todos', todoRouter);
 
 mlabUsername = process.env.MLAB_USERNAME;
 mlabPassword = process.env.MLAB_PASSWORD;

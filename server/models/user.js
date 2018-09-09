@@ -19,6 +19,8 @@ var userSchema = new Schema({
     type: Boolean,
     required: true
   }
+}, {
+  timestamps: true
 });
 
 userSchema.pre('save', function(next) {
